@@ -1,0 +1,29 @@
+# booking-app - front controller is per-directory index.php; no rewrite needed.
+
+# Never serve config or VCS files.
+<FilesMatch "^(config(\.local)?(\.example)?\.php|\.gitignore|composer\.(json|lock))$">
+	Require all denied
+</FilesMatch>
+
+# Block direct HTTP access to code / library / migration directories.
+# These are only ever reached via PHP include from a page in a public folder.
+RewriteEngine On
+RewriteRule ^(core|common|vendor|db)(/|$) - [F,L]
+
+# Apache/mod_php doesn't pass the Authorization header to PHP by default -
+# api/links/generate.php needs it for "Authorization: Bearer <key>" auth.
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Basic hardening headers.
+<IfModule mod_headers.c>
+	Header always set X-Content-Type-Options "nosniff"
+	Header always set X-Frame-Options "SAMEORIGIN"
+	Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+Options -Indexes
+
+<FilesMatch "\.(sql|bak|bk|old|orig|save|swp|swo|log|env|ini|conf|md|yml|yaml|json|txt|zip|tar|gz|tgz|rar|7z|pem|key|crt|pfx|p12|map|sqlite|db)$">
+	Require all denied
+</FilesMatch>

@@ -1,0 +1,13 @@
+# Real credentials - never commit
+config.local.php
+
+# Logs, backups, editor/OS noise
+*.log
+*.bak
+*.orig
+*.swp
+Thumbs.db
+.DS_Store
+.idea/
+.vscode/
+.claude/
